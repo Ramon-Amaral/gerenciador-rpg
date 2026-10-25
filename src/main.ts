@@ -1,18 +1,18 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Ativa a fiscalização dos DTOs em toda a aplicação
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true, // 1. Descarta campos extras que não estão no DTO
-      forbidNonWhitelisted: true, // 2. Devolve erro 400 se enviarem campos desconhecidos
-      transform: true, // 3. Converte os dados automaticamente para os tipos do DTO
-    }),
-  );
+  const config = new DocumentBuilder()
+    .setTitle('API Gerenciador de RPG')
+    .setDescription('Documentação visual para testar o CRUD de personagens')
+    .setVersion('1.0')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, document);
 
   await app.listen(process.env.PORT ?? 3000);
 }
